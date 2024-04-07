@@ -1,0 +1,35 @@
+name: Autograding Tests
+'on':
+- push
+- workflow_dispatch
+- repository_dispatch
+permissions:
+  checks: write
+  actions: read
+  contents: read
+jobs:
+  run-autograding-tests:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-classroom[bot]'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: Add two Numbers
+      id: add-two-numbers
+      uses: education/autograding-python-grader@v1
+      with:
+        timeout: 10
+        setup-command: ''
+    - name: python Basic Test1
+      id: python-basic-test1
+      uses: education/autograding-python-grader@v1
+      with:
+        timeout: 10
+        setup-command: ''
+    - name: Autograding Reporter
+      uses: education/autograding-grading-reporter@v1
+      env:
+        ADD-TWO-NUMBERS_RESULTS: "${{steps.add-two-numbers.outputs.result}}"
+        PYTHON-BASIC-TEST1_RESULTS: "${{steps.python-basic-test1.outputs.result}}"
+      with:
+        runners: add-two-numbers,python-basic-test1
